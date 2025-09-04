@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }} # Deployment name from values.yaml
+spec:
+  replicas: {{ .Values.appReplicas }} # Number of pod replicas
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }} # Selector for pods
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }} # Pod labels
+    spec:
+      containers:
+        - name: {{ .Values.appName }} # Container name
+          image: '{{ .Values.appImage }}:{{ .Values.appVersion }}' # Image and tag
+          ports:
+            - containerPort: {{ .Values.containerPort }} # Exposed port
+          env:
+          {{- range .Values.containerEnvVars }} # Loop over env vars
+            - name: {{ .name }}
+              value: {{ .value | quote }} # Quote the value for safety
+          {{- end }} # Correct syntax to end the loop
